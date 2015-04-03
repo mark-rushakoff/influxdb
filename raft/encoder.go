@@ -24,10 +24,8 @@ func (enc *LogEntryEncoder) Encode(e *LogEntry) error {
 	}
 
 	// Write data.
-	if _, err := enc.w.Write(e.Data); err != nil {
-		return err
-	}
-	return nil
+	_, err := enc.w.Write(e.Data)
+	return err
 }
 
 // LogEntryDecoder decodes entries from a reader.

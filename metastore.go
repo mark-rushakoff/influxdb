@@ -23,11 +23,7 @@ func (m *metastore) open(path string) error {
 	m.db = db
 
 	// Initialize the metastore.
-	if err := m.init(); err != nil {
-		return err
-	}
-
-	return nil
+	return m.init()
 }
 
 // close closes the store.

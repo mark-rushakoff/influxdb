@@ -562,11 +562,7 @@ func (l *Log) writeConfig(config *Config) error {
 	defer func() { _ = f.Close() }()
 
 	// Marshal config into file.
-	if err := NewConfigEncoder(f).Encode(config); err != nil {
-		return err
-	}
-
-	return nil
+	return NewConfigEncoder(f).Encode(config)
 }
 
 // Initialize a new log.
@@ -1703,11 +1699,7 @@ func (l *Log) writeTo(writer *logWriter, id, term, index uint64) error {
 	flushWriter(w)
 
 	// Write entries since the snapshot occurred and begin tailing writer.
-	if err := l.advanceWriter(writer); err != nil {
-		return err
-	}
-
-	return nil
+	return l.advanceWriter(writer)
 }
 
 // replays entries since the snapshot's index and begins tailing the log.

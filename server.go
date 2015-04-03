@@ -1612,7 +1612,7 @@ func (s *Server) applyDropSeries(m *messaging.Message) error {
 	}
 
 	// Remove from metastore.
-	err := s.meta.mustUpdate(m.Index, func(tx *metatx) error {
+	return s.meta.mustUpdate(m.Index, func(tx *metatx) error {
 		if err := tx.dropSeries(c.Database, c.SeriesByMeasurement); err != nil {
 			return err
 		}
@@ -1623,11 +1623,6 @@ func (s *Server) applyDropSeries(m *messaging.Message) error {
 		}
 		return nil
 	})
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
 
 // DropSeries deletes from an existing series.
@@ -1850,7 +1845,7 @@ func (s *Server) applyCreateMeasurementsIfNotExists(m *messaging.Message) error 
 	}
 
 	// Process command within a transaction.
-	if err := s.meta.mustUpdate(m.Index, func(tx *metatx) error {
+	return s.meta.mustUpdate(m.Index, func(tx *metatx) error {
 		for _, cm := range c.Measurements {
 			// Create each series
 			for _, t := range cm.Tags {
@@ -1894,11 +1889,7 @@ func (s *Server) applyCreateMeasurementsIfNotExists(m *messaging.Message) error 
 		}
 
 		return nil
-	}); err != nil {
-		return err
-	}
-
-	return nil
+	})
 }
 
 // DropMeasurement drops a given measurement from a database.
@@ -1922,23 +1913,15 @@ func (s *Server) applyDropMeasurement(m *messaging.Message) error {
 		return ErrMeasurementNotFound
 	}
 
-	err := s.meta.mustUpdate(m.Index, func(tx *metatx) error {
+	return s.meta.mustUpdate(m.Index, func(tx *metatx) error {
 		// Drop metastore data
 		if err := tx.dropMeasurement(c.Database, c.Name); err != nil {
 			return err
 		}
 
 		// Drop measurement from the database.
-		if err := database.dropMeasurement(c.Name); err != nil {
-			return err
-		}
-		return nil
+		return database.dropMeasurement(c.Name)
 	})
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
 
 // createShardGroupsIfNotExist walks the "points" and ensures that all required shards exist on the cluster.
