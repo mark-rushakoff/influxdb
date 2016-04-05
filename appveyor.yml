@@ -1,0 +1,12 @@
+---
+# Following directions from:
+# https://npf.io/2014/07/ci-for-windows-go-packages-with-appveyor/
+
+clone_folder: c:\GOPATH\src\github.com\influxdata\influxdb
+
+environment:
+  GOPATH: c:\GOPATH
+
+build_script: go get -v -d -t github.com/influxdata/influxdb/...
+
+test_script: go test -race ./...
