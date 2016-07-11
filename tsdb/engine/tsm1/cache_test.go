@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	"github.com/golang/snappy"
+	"github.com/influxdata/influxdb/tsdb"
 )
 
 func TestCache_NewCache(t *testing.T) {
@@ -619,6 +620,47 @@ func TestCacheLoader_LoadDeleted(t *testing.T) {
 	// Check the cache.
 	if values := cache.Values("foo"); !reflect.DeepEqual(values, Values{p1}) {
 		t.Fatalf("cache key foo not as expected, got %v, exp %v", values, Values{p1})
+	}
+}
+
+func TestCacheLoader_FuzzCrashes(t *testing.T) {
+	cases := []string{
+		"\x01\x00\x00\x00\x1e\x1fd\x10\x00\bctr#!~#n\xff\xff" +
+			"\xff\xe8\x14[\x17\x1c\r\x91\x03k?\xf0\x00\x05\x01",
+	}
+
+	for _, c := range cases {
+		func() {
+			defer func() {
+				err := recover()
+				if err != nil {
+					t.Errorf("exp no panic, got %s", err)
+				}
+			}()
+
+			// Write the data to a file since CacheLoader expects to load a collection of files.
+			f, err := ioutil.TempFile("", "cacheloader-fuzz")
+			if err != nil {
+				t.Errorf("exp no error, got %s", err)
+			}
+			defer os.Remove(f.Name())
+
+			if _, err := f.Write([]byte(c)); err != nil {
+				t.Errorf("exp no error, got %s", err)
+			}
+			if err := f.Close(); err != nil {
+				t.Errorf("exp no error, got %s", err)
+			}
+
+			cl := NewCacheLoader([]string{f.Name()})
+			cl.Logger.SetOutput(ioutil.Discard)
+
+			c := NewCache(tsdb.DefaultCacheMaxMemorySize, "")
+
+			if err := cl.Load(c); err != nil {
+				t.Errorf("exp no error, got %s", err)
+			}
+		}()
 	}
 }
 
