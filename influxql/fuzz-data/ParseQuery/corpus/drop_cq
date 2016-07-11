@@ -1,0 +1,1 @@
+DROP CONTINUOUS QUERY myquery ON mydb

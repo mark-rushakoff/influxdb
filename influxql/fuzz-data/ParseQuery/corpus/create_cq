@@ -1,0 +1,1 @@
+CREATE CONTINUOUS QUERY "cpu_mean" ON db_name RESAMPLE EVERY 10s FOR 2m BEGIN SELECT mean(value) INTO "cpu_mean" FROM "cpu" GROUP BY time(1m) END

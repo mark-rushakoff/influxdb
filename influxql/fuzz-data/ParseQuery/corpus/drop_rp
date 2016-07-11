@@ -1,0 +1,1 @@
+DROP RETENTION POLICY "1h.cpu" ON mydb

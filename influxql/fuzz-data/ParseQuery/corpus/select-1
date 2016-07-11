@@ -1,0 +1,1 @@
+SELECT * FROM db.rp.m WHERE x < 1 and y =~ /^what(?:ever)$/ GROUP BY * ORDER BY desc LIMIT 6 OFFSET 7 SLIMIT 8 SOFFSET 9
