@@ -1,0 +1,1 @@
+REVOKE READ ON mydb FROM jdoe

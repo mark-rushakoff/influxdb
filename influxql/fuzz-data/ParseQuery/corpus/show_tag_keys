@@ -1,0 +1,1 @@
+SHOW TAG KEYS FROM foo WHERE bar != 'abc'

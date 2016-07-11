@@ -1,0 +1,1 @@
+SHOW TAG VALUES FROM m WITH KEY = "mykey" WHERE a = 'b'
