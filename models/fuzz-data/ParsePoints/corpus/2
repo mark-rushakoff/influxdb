@@ -1,0 +1,1 @@
+my_measurement,a=abc,b=def,c=ghi b1=T,b2=F,b3=true,b4=false,i1=0i,i2=-123i,i3=456i,s1="",s2="abc",f1=0,f2=-123.456,f3=789.0123 123456
