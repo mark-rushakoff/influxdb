@@ -77,3 +77,15 @@ integration/migration_data/
 
 // Ingnore SourceGraph directory
 .srclib-store/
+
+# go-fuzz
+# Never want to check in crashers: they should be handled with an added test.
+**/fuzz-data/**/crashers/
+
+# Suppressions are only useful internally to go-fuzz.
+**/fuzz-data/**/suppressions/
+
+# Ignore automatically generated files that are all hex digits, maybe suffixed with dash and one or two trailing digits.
+**/fuzz-data/**/corpus/[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]*[0-9a-f][0-9a-f]
+**/fuzz-data/**/corpus/[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]*[0-9a-f][0-9a-f]-[0-9]
+**/fuzz-data/**/corpus/[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]*[0-9a-f][0-9a-f]-[0-9][0-9]
