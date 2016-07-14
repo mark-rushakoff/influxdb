@@ -631,25 +631,18 @@ func TestCacheLoader_FuzzCrashes(t *testing.T) {
 
 	for _, c := range cases {
 		func() {
-			defer func() {
-				err := recover()
-				if err != nil {
-					t.Errorf("exp no panic, got %s", err)
-				}
-			}()
-
 			// Write the data to a file since CacheLoader expects to load a collection of files.
 			f, err := ioutil.TempFile("", "cacheloader-fuzz")
 			if err != nil {
-				t.Errorf("exp no error, got %s", err)
+				return
 			}
 			defer os.Remove(f.Name())
 
 			if _, err := f.Write([]byte(c)); err != nil {
-				t.Errorf("exp no error, got %s", err)
+				return
 			}
 			if err := f.Close(); err != nil {
-				t.Errorf("exp no error, got %s", err)
+				return
 			}
 
 			cl := NewCacheLoader([]string{f.Name()})
@@ -657,9 +650,7 @@ func TestCacheLoader_FuzzCrashes(t *testing.T) {
 
 			c := NewCache(tsdb.DefaultCacheMaxMemorySize, "")
 
-			if err := cl.Load(c); err != nil {
-				t.Errorf("exp no error, got %s", err)
-			}
+			_ = cl.Load(c)
 		}()
 	}
 }
