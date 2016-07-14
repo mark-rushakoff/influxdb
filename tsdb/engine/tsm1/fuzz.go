@@ -4,6 +4,7 @@ package tsm1
 import (
 	"io/ioutil"
 	"os"
+	"path/filepath"
 
 	"github.com/influxdata/influxdb/tsdb"
 )
@@ -60,6 +61,48 @@ func FuzzCacheLoader(data []byte) int {
 
 	if err := cl.Load(c); err != nil {
 		return fuzzBoring
+	}
+
+	return fuzzInteresting
+}
+
+func FuzzTSMReader(data []byte) int {
+	dir, err := ioutil.TempDir("", "tsmreader-fuzz")
+	if err != nil {
+		// Should never happen. Has nothing to do with input data.
+		return fuzzBoring
+	}
+
+	filename := filepath.Join(dir, "x.tsm")
+	if err := ioutil.WriteFile(filename, data, 0600); err != nil {
+		return fuzzBoring
+	}
+	defer os.RemoveAll(dir)
+
+	f, err := os.Open(filename)
+	if err != nil {
+		return fuzzBoring
+	}
+	defer f.Close()
+
+	r, err := NewTSMReader(f)
+	if err != nil {
+		return fuzzBoring
+	}
+	defer r.Close()
+
+	iter := r.BlockIterator()
+	for iter.Next() {
+		key, _, _, _, _, err := iter.Read()
+		if err != nil {
+			return fuzzBoring
+		}
+
+		_, _ = r.Type(key)
+
+		if _, err = r.ReadAll(key); err != nil {
+			return fuzzBoring
+		}
 	}
 
 	return fuzzInteresting
